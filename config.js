@@ -15,11 +15,15 @@ const CONFIG = {
 
 // ── API helper ──────────────────────────────────────────────
 async function api(action, payload = {}) {
-  const res = await fetch(CONFIG.WEBHOOK_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action, payload }),
+  const url = CONFIG.WEBHOOK_URL
+    + '?action=' + encodeURIComponent(action)
+    + '&payload=' + encodeURIComponent(JSON.stringify(payload));
+
+  const res = await fetch(url, {
+    method: 'GET',
+    redirect: 'follow',
   });
+
   if (!res.ok) throw new Error('Error HTTP ' + res.status);
   const data = await res.json();
   if (data.error) throw new Error(data.error);
