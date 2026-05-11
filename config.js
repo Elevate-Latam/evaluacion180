@@ -6,7 +6,7 @@
 const CONFIG = {
   // URL del Google Apps Script desplegado como "Aplicación web"
   // Ej: https://script.google.com/macros/s/AKfyc.../exec
-  WEBHOOK_URL: 'https://script.google.com/macros/s/AKfycbzHl8xCLs4Mlf2SDA0UnfizldE21SgYoH1dU3engUJxKlfHFnZ26gnoM5cV98wm0tvVkQ/exec',
+  WEBHOOK_URL: 'https://script.google.com/macros/s/AKfycbxG6uhq_r4qYx9YmThPWX2V0XhxxYYI6S4etJgSYJ5UtH1PNeLsfzbRNVig6orNkOElKw/exec',
 
   // URL base donde está publicado este sitio en GitHub Pages
   // Ej: https://tuusuario.github.io/evaluacion180
