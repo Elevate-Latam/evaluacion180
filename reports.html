@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reportes — Evaluación 180°</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --accent:#4F46A0;
+  --accent2:#7C74FF;
+  --lider:#4F46A0;
+  --auto:#059669;
+  --bg:#FAFAF9;
+  --surface:#FFFFFF;
+  --border:#E5E5E8;
+  --text:#1A1A24;
+  --text2:#5A5A70;
+  --text3:#9090A8;
+  --font:'DM Sans',sans-serif;
+  --mono:'DM Mono',monospace;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px}
+
+/* Print */
+@media print{
+  .no-print{display:none!important}
+  body{background:#fff}
+  .report-page{box-shadow:none!important;margin:0!important;border-radius:0!important}
+  .page-break{page-break-before:always}
+}
+
+/* Nav */
+.topbar{background:var(--accent);padding:14px 32px;display:flex;align-items:center;justify-content:space-between}
+.topbar-title{font-size:14px;font-weight:600;color:#fff}
+.topbar-sub{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px}
+.btn-print{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:7px;padding:8px 16px;font-family:var(--font);font-size:12px;cursor:pointer;transition:background .15s}
+.btn-print:hover{background:rgba(255,255,255,.25)}
+
+/* Layout */
+.shell{max-width:960px;margin:0 auto;padding:32px 20px 60px}
+.report-page{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:40px;margin-bottom:32px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+
+/* Typography */
+.report-header{border-bottom:2px solid var(--accent);padding-bottom:20px;margin-bottom:28px}
+.report-title{font-size:22px;font-weight:600;color:var(--text)}
+.report-meta{display:flex;gap:20px;flex-wrap:wrap;margin-top:8px}
+.meta-item{font-size:12px;color:var(--text3);font-family:var(--mono)}
+.meta-item strong{color:var(--text2)}
+.section-title{font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin:28px 0 14px}
+
+/* Legend */
+.legend{display:flex;gap:20px;margin-bottom:20px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)}
+.legend-dot{width:10px;height:10px;border-radius:50%}
+
+/* Charts */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:28px}
+.chart-box{position:relative}
+.chart-box canvas{width:100%!important}
+
+/* Table */
+table{width:100%;border-collapse:collapse;margin-top:4px}
+thead{background:var(--bg)}
+th{text-align:left;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;padding:10px 12px;border-bottom:2px solid var(--border)}
+td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2)}
+td:first-child{color:var(--text);font-weight:500}
+tr:last-child td{border-bottom:none}
+.score-cell{font-family:var(--mono);font-weight:600}
+.score-lider{color:var(--lider)}
+.score-auto{color:var(--auto)}
+.score-gap{font-size:11px;color:var(--text3)}
+.gap-pos{color:#059669}
+.gap-neg{color:#DC2626}
+
+/* Heatmap row */
+.hm-bar{height:16px;border-radius:4px;background:var(--border);overflow:hidden;min-width:60px}
+.hm-fill{height:100%;border-radius:4px;transition:width .4s}
+
+/* Colaborador card (reporte general) */
+.colab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:16px}
+.colab-card{border:1px solid var(--border);border-radius:10px;padding:16px;background:var(--bg)}
+.colab-name{font-weight:600;color:var(--text);font-size:14px}
+.colab-meta{font-size:11px;color:var(--text3);margin-top:2px;margin-bottom:10px;font-family:var(--mono)}
+.colab-score{font-size:24px;font-weight:700;font-family:var(--mono);color:var(--accent)}
+.colab-score-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em}
+.colab-bar{height:6px;background:var(--border);border-radius:4px;margin-top:6px}
+.colab-bar-fill{height:6px;border-radius:4px}
+
+/* Status badges */
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;font-family:var(--mono)}
+.badge-ok{background:#ECFDF5;color:#059669;border:1px solid #A7F3D0}
+.badge-pending{background:#FEF3C7;color:#D97706;border:1px solid #FDE68A}
+.badge-missing{background:#FEE2E2;color:#DC2626;border:1px solid #FECACA}
+
+/* Comentarios */
+.comment-box{background:var(--bg);border-left:3px solid var(--border);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:10px}
+.comment-tipo{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+.comment-tipo.lider{color:var(--lider)}
+.comment-tipo.auto{color:var(--auto)}
+.comment-text{font-size:13px;color:var(--text2);line-height:1.6}
+
+/* Individual header */
+.individual-header{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start;margin-bottom:24px}
+.big-score{text-align:right}
+.big-score-val{font-size:48px;font-weight:700;font-family:var(--mono);color:var(--accent);line-height:1}
+.big-score-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em}
+
+/* Loading/error */
+.screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px}
+.screen-box{text-align:center;max-width:400px}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<!-- Cargando -->
+<div id="state-loading" class="screen">
+  <div class="screen-box">
+    <div class="spinner"></div>
+    <p style="color:var(--text2)">Cargando reporte...</p>
+  </div>
+</div>
+
+<!-- Error -->
+<div id="state-error" class="screen" style="display:none">
+  <div class="screen-box">
+    <div style="font-size:40px;margin-bottom:12px">⚠️</div>
+    <p style="font-size:16px;font-weight:600;color:var(--text)">Error al cargar reporte</p>
+    <p style="font-size:13px;color:var(--text2);margin-top:6px" id="err-detail"></p>
+  </div>
+</div>
+
+<!-- Reporte -->
+<div id="state-report" style="display:none">
+  <div class="topbar no-print">
+    <div>
+      <div class="topbar-title" id="top-title">Reporte</div>
+      <div class="topbar-sub" id="top-sub"></div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <a href="index.html" class="btn-print">← Panel RRHH</a>
+      <button class="btn-print" onclick="window.print()">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="1" width="10" height="10" rx="1"/><path d="M1 7h14v6a1 1 0 01-1 1H2a1 1 0 01-1-1V7z"/><line x1="5" y1="11" x2="11" y2="11"/><line x1="5" y1="13" x2="8" y2="13"/></svg>
+        Exportar PDF
+      </button>
+    </div>
+  </div>
+  <div class="shell" id="report-container"></div>
+</div>
+
+<script src="config.js"></script>
+<script>
+function show(s) {
+  ['loading','error','report'].forEach(id =>
+    document.getElementById('state-' + id).style.display = id === s ? 'block' : 'none'
+  );
+}
+
+function scoreColor(v) {
+  if (!v) return '#D1D5DB';
+  if (v >= 4.5) return '#059669';
+  if (v >= 3.5) return '#10B981';
+  if (v >= 2.5) return '#F59E0B';
+  if (v >= 1.5) return '#EF4444';
+  return '#DC2626';
+}
+
+function barWidth(v) { return v ? Math.round((v / 5) * 100) : 0; }
+
+function getParams() {
+  const p = new URLSearchParams(window.location.search);
+  return {
+    proceso_id:  p.get('proceso_id'),
+    tipo:        p.get('tipo'),
+    lider_email: p.get('lider_email'),
+    persona_id:  p.get('persona_id'),
+  };
+}
+
+// ══ REPORTE GENERAL ══════════════════════════════════════════
+async function renderGeneral(pid) {
+  const d = await api('get_reporte_general', { proceso_id: pid });
+  document.getElementById('top-title').textContent = 'Reporte general — ' + d.proceso.nombre;
+  document.getElementById('top-sub').textContent   = d.proceso.cliente + ' · ' + d.colaboradores.length + ' colaboradores';
+
+  const avgGlobal = d.colaboradores.filter(c => c.prom_total).reduce((a,c,_,arr) => a + c.prom_total/arr.length, 0);
+
+  const container = document.getElementById('report-container');
+  container.innerHTML = `
+    <div class="report-page">
+      <div class="report-header">
+        <div class="report-title">Reporte general de evaluación 180°</div>
+        <div class="report-meta">
+          <div class="meta-item">Proceso: <strong>${d.proceso.nombre}</strong></div>
+          <div class="meta-item">Cliente: <strong>${d.proceso.cliente}</strong></div>
+          <div class="meta-item">Período: <strong>${d.proceso.fecha_inicio} → ${d.proceso.fecha_cierre}</strong></div>
+          <div class="meta-item">Colaboradores: <strong>${d.colaboradores.length}</strong></div>
+          <div class="meta-item">Promedio global: <strong style="color:var(--accent)">${avgGlobal.toFixed(2)}</strong></div>
+        </div>
+      </div>
+
+      <div class="section-title">Resumen por colaborador</div>
+      <div class="colab-grid">
+        ${d.colaboradores.map(c => {
+          const pct = c.prom_total ? Math.round(c.prom_total/5*100) : 0;
+          const col = scoreColor(c.prom_total);
+          return `
+          <div class="colab-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start">
+              <div>
+                <div class="colab-name">${c.nombre}</div>
+                <div class="colab-meta">${c.cargo || '—'} · ${c.area || '—'}</div>
+              </div>
+              <div style="text-align:right">
+                ${c.completado_lider && c.completado_auto ? '<span class="badge badge-ok">Completo</span>' :
+                  c.completado_lider || c.completado_auto ? '<span class="badge badge-pending">Parcial</span>' :
+                  '<span class="badge badge-missing">Pendiente</span>'}
+              </div>
+            </div>
+            <div style="display:flex;align-items:baseline;gap:8px;margin-top:8px">
+              <div class="colab-score" style="color:${col}">${c.prom_total ? c.prom_total.toFixed(2) : '—'}</div>
+              <div class="colab-score-label">/ 5.00</div>
+            </div>
+            <div class="colab-bar"><div class="colab-bar-fill" style="width:${pct}%;background:${col}"></div></div>
+            <div style="font-size:11px;color:var(--text3);margin-top:6px">Líder: ${c.lider_nombre || '—'}</div>
+          </div>`;
+        }).join('')}
+      </div>
+
+      <div class="section-title">Tabla detallada por competencia</div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Colaborador</th>
+              ${d.competencias.map(c => `<th style="text-align:center;min-width:80px">${c.nombre.split(' ').slice(0,2).join(' ')}</th>`).join('')}
+              <th style="text-align:center">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${d.colaboradores.map(c => `
+              <tr>
+                <td>${c.nombre}</td>
+                ${c.promedios.map(p => {
+                  const avg = p.prom_lider && p.prom_auto ? ((p.prom_lider + p.prom_auto)/2).toFixed(1) :
+                              (p.prom_lider || p.prom_auto || '—');
+                  const col = scoreColor(parseFloat(avg));
+                  return `<td style="text-align:center">
+                    <div class="hm-bar"><div class="hm-fill" style="width:${barWidth(parseFloat(avg))}%;background:${col}"></div></div>
+                    <div style="font-size:11px;font-family:var(--mono);color:var(--text2);margin-top:2px">${avg}</div>
+                  </td>`;
+                }).join('')}
+                <td style="text-align:center" class="score-cell" style="color:${scoreColor(c.prom_total)}">${c.prom_total ? c.prom_total.toFixed(2) : '—'}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+
+  show('report');
+  renderRadarGeneral(d);
+}
+
+function renderRadarGeneral(d) {
+  const avgByComp = d.competencias.map((c, ci) => {
+    const vals = d.colaboradores.map(col => col.promedios[ci]).filter(p => p && (p.prom_lider || p.prom_auto));
+    const avgs = vals.map(p => p.prom_lider && p.prom_auto ? (p.prom_lider+p.prom_auto)/2 : p.prom_lider || p.prom_auto);
+    return avgs.length ? avgs.reduce((a,b)=>a+b,0)/avgs.length : 0;
+  });
+
+  const div = document.createElement('div');
+  div.className = 'report-page no-print';
+  div.style.marginBottom = '32px';
+  div.innerHTML = `
+    <div class="section-title" style="margin-top:0">Radar general — promedio por competencia</div>
+    <div style="max-width:480px;margin:0 auto"><canvas id="radar-general"></canvas></div>`;
+  document.getElementById('report-container').appendChild(div);
+
+  new Chart(document.getElementById('radar-general'), {
+    type: 'radar',
+    data: {
+      labels: d.competencias.map(c => c.nombre.length > 18 ? c.nombre.substr(0,18)+'…' : c.nombre),
+      datasets: [{
+        label: 'Promedio',
+        data: avgByComp,
+        backgroundColor: 'rgba(79,70,160,.15)',
+        borderColor: '#4F46A0',
+        borderWidth: 2,
+        pointBackgroundColor: '#4F46A0',
+        pointRadius: 4,
+      }]
+    },
+    options: {
+      scales: { r: { min: 0, max: 5, ticks: { stepSize: 1, font: { size: 10 } }, pointLabels: { font: { size: 10 } } } },
+      plugins: { legend: { display: false } }
+    }
+  });
+}
+
+// ══ REPORTE POR LÍDER ═════════════════════════════════════════
+async function renderLider(pid, liderEmail) {
+  const d = await api('get_reporte_lider', { proceso_id: pid, lider_email: liderEmail });
+  document.getElementById('top-title').textContent = 'Reporte del equipo — ' + (d.equipo[0]?.nombre ? '' : liderEmail);
+  document.getElementById('top-sub').textContent   = d.proceso.nombre + ' · ' + d.equipo.length + ' colaboradores';
+
+  const container = document.getElementById('report-container');
+  container.innerHTML = `
+    <div class="report-page">
+      <div class="report-header">
+        <div class="report-title">Reporte del equipo</div>
+        <div class="report-meta">
+          <div class="meta-item">Proceso: <strong>${d.proceso.nombre}</strong></div>
+          <div class="meta-item">Líder: <strong>${liderEmail}</strong></div>
+          <div class="meta-item">Colaboradores: <strong>${d.equipo.length}</strong></div>
+        </div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--lider)"></div>Evaluación del líder</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--auto)"></div>Autoevaluación</div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Colaborador</th>
+            ${d.competencias.map(c => `<th style="text-align:center;min-width:68px">${c.nombre.split(' ').slice(0,2).join(' ')}</th>`).join('')}
+          </tr>
+        </thead>
+        <tbody>
+          ${d.equipo.map(col => `
+            <tr>
+              <td>${col.nombre}<div style="font-size:11px;color:var(--text3)">${col.cargo||''}</div></td>
+              ${col.promedios.map(p => `
+                <td style="text-align:center;padding:6px">
+                  <div style="font-size:11px;font-family:var(--mono);color:var(--lider)">${p.prom_lider ? p.prom_lider.toFixed(1) : '—'}</div>
+                  <div style="font-size:11px;font-family:var(--mono);color:var(--auto)">${p.prom_auto ? p.prom_auto.toFixed(1) : '—'}</div>
+                </td>`).join('')}
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+
+  show('report');
+
+  // Gráfica de barras agrupadas por miembro
+  d.equipo.forEach((col, idx) => {
+    const div = document.createElement('div');
+    div.className = 'report-page' + (idx > 0 ? ' page-break' : '');
+    div.innerHTML = `
+      <div class="report-header">
+        <div class="report-title">${col.nombre}</div>
+        <div class="report-meta"><div class="meta-item">${col.cargo || ''}</div></div>
+      </div>
+      <div class="charts-row">
+        <div class="chart-box"><canvas id="bar-${idx}"></canvas></div>
+        <div class="chart-box"><canvas id="radar-${idx}"></canvas></div>
+      </div>
+      ${col.comentarios.length ? `
+        <div class="section-title">Comentarios</div>
+        ${col.comentarios.map(c => `
+          <div class="comment-box">
+            <div class="comment-tipo ${c.tipo}">${c.tipo === 'lider' ? 'Del líder' : 'Autoevaluación'}</div>
+            <div class="comment-text">${c.texto}</div>
+          </div>`).join('')}` : ''}`;
+    document.getElementById('report-container').appendChild(div);
+
+    const labels = col.promedios.map(p => p.nombre.length > 16 ? p.nombre.substr(0,16)+'…' : p.nombre);
+    new Chart(document.getElementById('bar-' + idx), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Líder',           data: col.promedios.map(p => p.prom_lider), backgroundColor: 'rgba(79,70,160,.7)', borderRadius: 4 },
+          { label: 'Autoevaluación',  data: col.promedios.map(p => p.prom_auto),  backgroundColor: 'rgba(5,150,105,.6)', borderRadius: 4 },
+        ]
+      },
+      options: { scales: { y: { min: 0, max: 5 } }, plugins: { legend: { position: 'top' } } }
+    });
+    new Chart(document.getElementById('radar-' + idx), {
+      type: 'radar',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Líder',           data: col.promedios.map(p => p.prom_lider), backgroundColor: 'rgba(79,70,160,.15)', borderColor: '#4F46A0', borderWidth: 2, pointRadius: 3 },
+          { label: 'Autoevaluación',  data: col.promedios.map(p => p.prom_auto),  backgroundColor: 'rgba(5,150,105,.1)',  borderColor: '#059669', borderWidth: 2, pointRadius: 3 },
+        ]
+      },
+      options: { scales: { r: { min: 0, max: 5, ticks: { font: { size: 9 } }, pointLabels: { font: { size: 9 } } } }, plugins: { legend: { position: 'top' } } }
+    });
+  });
+}
+
+// ══ REPORTE INDIVIDUAL ════════════════════════════════════════
+async function renderIndividual(pid, personaId) {
+  // Si no hay persona_id en URL, mostrar selector
+  if (!personaId) {
+    const d = await api('get_reporte_general', { proceso_id: pid });
+    show('report');
+    document.getElementById('top-title').textContent = 'Reporte individual';
+    document.getElementById('top-sub').textContent   = d.proceso.nombre;
+
+    const container = document.getElementById('report-container');
+    container.innerHTML = `
+      <div class="report-page">
+        <div class="report-header">
+          <div class="report-title">Selecciona un colaborador</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px">
+          ${d.colaboradores.map(c => `
+            <div onclick="reloadWithPersona('${c.persona_id}')"
+                 style="padding:14px 16px;border:1px solid var(--border);border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:border .15s"
+                 onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div>
+                <div style="font-weight:500;color:var(--text)">${c.nombre}</div>
+                <div style="font-size:11px;color:var(--text3);font-family:var(--mono)">${c.cargo||''} · ${c.area||''}</div>
+              </div>
+              <div style="font-size:22px;font-family:var(--mono);font-weight:700;color:var(--accent)">${c.prom_total ? c.prom_total.toFixed(2) : '—'}</div>
+            </div>`).join('')}
+        </div>
+      </div>`;
+    return;
+  }
+
+  const d = await api('get_reporte_individual', { proceso_id: pid, persona_id: personaId });
+  const { persona, competencias, promedios, comentarios, proceso } = d;
+  document.getElementById('top-title').textContent = 'Reporte individual — ' + persona.nombre;
+  document.getElementById('top-sub').textContent   = proceso.nombre;
+
+  const promLider  = promedios.filter(p=>p.prom_lider).reduce((a,p,_,arr)=>a+p.prom_lider/arr.length,0);
+  const promAuto   = promedios.filter(p=>p.prom_auto).reduce((a,p,_,arr)=>a+p.prom_auto/arr.length,0);
+  const promTotal  = (promLider + promAuto) / 2;
+
+  const container = document.getElementById('report-container');
+  container.innerHTML = `
+    <div class="report-page">
+      <div class="report-header">
+        <div class="individual-header">
+          <div>
+            <div class="report-title">${persona.nombre}</div>
+            <div class="report-meta">
+              <div class="meta-item">Cargo: <strong>${persona.cargo||'—'}</strong></div>
+              <div class="meta-item">Área: <strong>${persona.area||'—'}</strong></div>
+              <div class="meta-item">Líder: <strong>${persona.lider_nombre||'—'}</strong></div>
+              <div class="meta-item">Proceso: <strong>${proceso.nombre}</strong></div>
+            </div>
+          </div>
+          <div class="big-score">
+            <div class="big-score-val" style="color:${scoreColor(promTotal)}">${promTotal.toFixed(2)}</div>
+            <div class="big-score-label">promedio global</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--lider)"></div>Evaluación del líder</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--auto)"></div>Autoevaluación</div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-box"><canvas id="bar-ind"></canvas></div>
+        <div class="chart-box"><canvas id="radar-ind"></canvas></div>
+      </div>
+
+      <div class="section-title">Detalle por competencia</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Competencia</th>
+            <th style="text-align:center">Líder</th>
+            <th style="text-align:center">Autoevaluación</th>
+            <th style="text-align:center">Brecha</th>
+            <th style="text-align:left">Nivel</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${promedios.map(p => {
+            const brecha = p.prom_lider && p.prom_auto ? (p.prom_lider - p.prom_auto).toFixed(2) : '—';
+            const brechaNum = parseFloat(brecha);
+            const brechaClass = !isNaN(brechaNum) ? (brechaNum > 0.3 ? 'gap-neg' : brechaNum < -0.3 ? 'gap-pos' : '') : '';
+            const brechaText = !isNaN(brechaNum) ? (brechaNum > 0.3 ? 'Sobreestimación' : brechaNum < -0.3 ? 'Subestimación' : 'Alineados') : '—';
+            const avg = p.prom_lider && p.prom_auto ? (p.prom_lider + p.prom_auto)/2 : (p.prom_lider || p.prom_auto);
+            const nivel = avg >= 4.5 ? 'Sobresaliente' : avg >= 3.5 ? 'Por encima' : avg >= 2.5 ? 'En desarrollo' : avg >= 1.5 ? 'Por mejorar' : '—';
+            return `
+              <tr>
+                <td>${p.nombre}</td>
+                <td style="text-align:center" class="score-cell score-lider">${p.prom_lider ? p.prom_lider.toFixed(2) : '—'}</td>
+                <td style="text-align:center" class="score-cell score-auto">${p.prom_auto  ? p.prom_auto.toFixed(2)  : '—'}</td>
+                <td style="text-align:center" class="score-cell score-gap ${brechaClass}">${brecha}</td>
+                <td><span style="font-size:12px;color:${scoreColor(avg)}">${nivel}</span></td>
+              </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+
+      ${comentarios.length ? `
+        <div class="section-title">Comentarios recibidos</div>
+        ${comentarios.map(c => `
+          <div class="comment-box">
+            <div class="comment-tipo ${c.tipo}">${c.tipo === 'lider' ? 'Del líder' : 'Autoevaluación'}</div>
+            <div class="comment-text">${c.texto}</div>
+          </div>`).join('')}` : ''}
+    </div>`;
+
+  show('report');
+
+  const labels = promedios.map(p => p.nombre.length > 16 ? p.nombre.substr(0,16)+'…' : p.nombre);
+  new Chart(document.getElementById('bar-ind'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Líder',           data: promedios.map(p => p.prom_lider), backgroundColor: 'rgba(79,70,160,.75)', borderRadius: 4 },
+        { label: 'Autoevaluación',  data: promedios.map(p => p.prom_auto),  backgroundColor: 'rgba(5,150,105,.65)', borderRadius: 4 },
+      ]
+    },
+    options: { scales: { y: { min: 0, max: 5 } }, plugins: { legend: { position: 'top' } } }
+  });
+  new Chart(document.getElementById('radar-ind'), {
+    type: 'radar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Líder',           data: promedios.map(p => p.prom_lider), backgroundColor: 'rgba(79,70,160,.15)', borderColor: '#4F46A0', borderWidth: 2, pointRadius: 3 },
+        { label: 'Autoevaluación',  data: promedios.map(p => p.prom_auto),  backgroundColor: 'rgba(5,150,105,.1)',  borderColor: '#059669', borderWidth: 2, pointRadius: 3 },
+      ]
+    },
+    options: { scales: { r: { min: 0, max: 5, ticks: { font: { size: 9 } }, pointLabels: { font: { size: 9 } } } }, plugins: { legend: { position: 'top' } } }
+  });
+}
+
+function reloadWithPersona(personaId) {
+  const p = new URLSearchParams(window.location.search);
+  p.set('persona_id', personaId);
+  window.location.search = p.toString();
+}
+
+// ── Router ────────────────────────────────────────────────────
+async function init() {
+  const { proceso_id, tipo, lider_email, persona_id } = getParams();
+  if (!proceso_id || !tipo) {
+    document.getElementById('err-detail').textContent = 'Faltan parámetros en la URL (proceso_id y tipo son requeridos).';
+    show('error');
+    return;
+  }
+  try {
+    if (tipo === 'general')    await renderGeneral(proceso_id);
+    else if (tipo === 'lider') await renderLider(proceso_id, lider_email);
+    else if (tipo === 'individual') await renderIndividual(proceso_id, persona_id);
+    else { document.getElementById('err-detail').textContent = 'Tipo de reporte no válido: ' + tipo; show('error'); }
+  } catch(e) {
+    document.getElementById('err-detail').textContent = e.message;
+    show('error');
+  }
+}
+
+init();
+</script>
+</body>
+</html>
