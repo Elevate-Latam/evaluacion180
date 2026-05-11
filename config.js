@@ -10,7 +10,7 @@ const CONFIG = {
 
   // URL base donde está publicado este sitio en GitHub Pages
   // Ej: https://tuusuario.github.io/evaluacion180
-  BASE_URL: 'TU_GITHUB_PAGES_URL_AQUI',
+  BASE_URL: 'https://elevate-latam.github.io/evaluacion180/',
 };
 
 // ── API helper ──────────────────────────────────────────────
