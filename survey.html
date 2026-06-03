@@ -5,165 +5,123 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Evaluación de desempeño</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#FAFAF9;
-  --surface:#FFFFFF;
-  --border:#E5E5E8;
-  --accent:#4F46A0;
-  --accent-light:#EEF2FF;
-  --text:#1A1A24;
-  --text2:#5A5A70;
-  --text3:#9090A8;
-  --success:#059669;
-  --success-bg:#ECFDF5;
-  --font:'DM Sans',sans-serif;
-  --radius:12px;
+  --navy-900:#0D1B2A;
+  --navy-800:#1E3A5F;
+  --navy-600:#2563EB;
+  --navy-400:#60A5FA;
+  --navy-100:#DBEAFE;
+  --navy-50:#EFF6FF;
+  --slate-900:#0F172A;
+  --slate-600:#475569;
+  --slate-400:#94A3B8;
+  --slate-300:#CBD5E1;
+  --slate-200:#E2E8F0;
+  --slate-100:#F1F5F9;
+  --white:#FFFFFF;
+  --green:#16A34A;
+  --font:'Inter',sans-serif;
 }
-body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;padding:0}
+body{font-family:var(--font);background:var(--slate-100);color:var(--slate-900);min-height:100vh}
 
-/* Header */
-.header{background:var(--accent);padding:24px 0;text-align:center}
-.header-inner{max-width:680px;margin:0 auto;padding:0 20px}
-.header-pre{font-size:11px;color:rgba(255,255,255,.6);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
-.header-title{font-size:20px;font-weight:600;color:#fff;line-height:1.3}
-.header-sub{font-size:13px;color:rgba(255,255,255,.7);margin-top:4px}
+.header{background:linear-gradient(135deg,var(--navy-900) 0%,var(--navy-800) 100%);padding:28px 0}
+.header-inner{max-width:640px;margin:0 auto;padding:0 20px}
+.header-pre{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}
+.header-title{font-size:21px;font-weight:600;color:var(--white);line-height:1.3}
+.header-meta{font-size:12px;color:rgba(255,255,255,.55);margin-top:6px}
 
-/* Progress */
-.progress-outer{background:rgba(0,0,0,.15);height:4px}
-.progress-inner{height:4px;background:#A78BFA;transition:width .4s}
+.progress-outer{background:rgba(0,0,0,.2);height:3px}
+.progress-inner{height:3px;background:var(--navy-400);transition:width .4s}
 
-/* Container */
-.container{max-width:680px;margin:0 auto;padding:32px 20px 60px}
+.counter-bar{background:var(--white);border-bottom:1px solid var(--slate-200);padding:10px 20px;position:sticky;top:0;z-index:10}
+.counter-inner{max-width:640px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.counter-label{font-size:12px;color:var(--slate-400)}
+.counter-val{font-size:13px;font-weight:600;color:var(--navy-800)}
 
-/* Info card */
-.info-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:24px}
-.info-pill{display:inline-flex;align-items:center;gap:6px;background:var(--accent-light);color:var(--accent);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:500}
-.info-evaluado{margin-top:12px;font-size:15px;font-weight:500;color:var(--text)}
-.info-tipo{font-size:12px;color:var(--text3);margin-top:2px}
+.container{max-width:640px;margin:0 auto;padding:28px 20px 60px}
 
-/* Competencia card */
-.comp-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:16px;transition:border-color .2s}
-.comp-card.answered{border-color:rgba(79,70,160,.3);background:#FAFAFF}
-.comp-number{font-size:11px;color:var(--text3);font-weight:500;margin-bottom:6px;letter-spacing:.06em}
-.comp-name{font-size:16px;font-weight:500;color:var(--text);margin-bottom:20px}
+.info-card{background:var(--white);border:1px solid var(--slate-200);border-radius:10px;padding:18px 22px;margin-bottom:20px}
+.info-badge{display:inline-flex;align-items:center;background:var(--navy-50);color:var(--navy-800);border:1px solid var(--navy-100);border-radius:20px;padding:3px 12px;font-size:11px;font-weight:600;letter-spacing:.04em;margin-bottom:10px}
+.info-name{font-size:15px;font-weight:600;color:var(--slate-900)}
+.info-inst{font-size:12px;color:var(--slate-400);margin-top:3px}
 
-/* Likert */
-.likert{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
-.likert-option{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer}
-.likert-option input{display:none}
-.likert-circle{width:44px;height:44px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:var(--text3);transition:all .18s;cursor:pointer;user-select:none}
-.likert-label{font-size:10px;color:var(--text3);text-align:center;line-height:1.3;transition:color .18s}
-.likert-option input:checked ~ .likert-circle{border-color:var(--accent);background:var(--accent);color:#fff}
-.likert-option input:checked ~ .likert-label{color:var(--accent);font-weight:500}
-.likert-option:hover .likert-circle{border-color:var(--accent);color:var(--accent)}
-
-/* Mobile likert */
-@media(max-width:480px){
-  .likert{gap:4px}
-  .likert-circle{width:38px;height:38px;font-size:14px}
-  .likert-label{font-size:9px}
-}
-
-/* Comentario */
-.comment-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:24px}
-.comment-section label{display:block;font-size:14px;font-weight:500;color:var(--text);margin-bottom:8px}
-.comment-section p{font-size:12px;color:var(--text3);margin-bottom:14px}
-textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:var(--font);font-size:14px;color:var(--text);resize:vertical;min-height:100px;outline:none;transition:border .15s}
-textarea:focus{border-color:var(--accent)}
-
-/* Enviar btn */
-.submit-area{text-align:center;padding:8px 0}
-.btn-submit{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:16px 40px;font-family:var(--font);font-size:15px;font-weight:600;cursor:pointer;transition:background .15s;width:100%;max-width:340px}
-.btn-submit:hover{background:#3D3590}
-.btn-submit:disabled{opacity:.5;cursor:not-allowed}
-
-/* Validación */
+.comp-card{background:var(--white);border:1px solid var(--slate-200);border-radius:10px;padding:22px;margin-bottom:14px;transition:border-color .2s,box-shadow .2s}
+.comp-card.answered{border-color:var(--navy-400);box-shadow:0 0 0 3px rgba(96,165,250,.1)}
 .comp-card.error{border-color:#F87171;animation:shake .3s}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.comp-num{font-size:11px;color:var(--slate-400);font-weight:500;margin-bottom:5px;letter-spacing:.06em}
+.comp-name{font-size:15px;font-weight:500;color:var(--slate-900);margin-bottom:18px;line-height:1.4}
 
-/* Estados pantalla */
+.likert{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.likert-opt{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer}
+.likert-opt input{display:none}
+.likert-circle{width:46px;height:46px;border-radius:50%;border:2px solid var(--slate-300);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:var(--slate-400);transition:all .18s;cursor:pointer;user-select:none;background:var(--slate-100)}
+.likert-lbl{font-size:10px;color:var(--slate-400);text-align:center;line-height:1.3}
+.likert-opt input:checked ~ .likert-circle{border-color:var(--navy-800);background:var(--navy-800);color:var(--white)}
+.likert-opt input:checked ~ .likert-lbl{color:var(--navy-800);font-weight:600}
+.likert-opt:hover .likert-circle{border-color:var(--navy-600);color:var(--navy-600);background:var(--navy-50)}
+
+@media(max-width:480px){.likert{gap:4px}.likert-circle{width:38px;height:38px;font-size:14px}}
+
+.comment-card{background:var(--white);border:1px solid var(--slate-200);border-radius:10px;padding:22px;margin-bottom:20px}
+.comment-card label{display:block;font-size:14px;font-weight:500;color:var(--slate-900);margin-bottom:4px}
+.comment-card p{font-size:12px;color:var(--slate-400);margin-bottom:12px}
+textarea{width:100%;background:var(--slate-100);border:1px solid var(--slate-200);border-radius:8px;padding:12px;font-family:var(--font);font-size:13px;color:var(--slate-900);resize:vertical;min-height:100px;outline:none;transition:border .15s}
+textarea:focus{border-color:var(--navy-600);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+
+.btn-submit{width:100%;max-width:340px;display:block;margin:0 auto;background:var(--navy-800);color:var(--white);border:none;border-radius:10px;padding:15px;font-family:var(--font);font-size:15px;font-weight:600;cursor:pointer;transition:background .15s}
+.btn-submit:hover{background:var(--navy-900)}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed}
+
+/* Pantallas */
 .screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px}
-.screen-box{max-width:480px;text-align:center}
-.screen-icon{font-size:48px;margin-bottom:16px}
-.screen-title{font-size:22px;font-weight:600;color:var(--text);margin-bottom:8px}
-.screen-sub{font-size:14px;color:var(--text2);line-height:1.6}
+.screen-box{max-width:440px;text-align:center}
+.screen-icon{font-size:52px;margin-bottom:16px}
+.screen-title{font-size:22px;font-weight:600;color:var(--slate-900);margin-bottom:8px}
+.screen-sub{font-size:14px;color:var(--slate-600);line-height:1.6}
 
-/* Loading */
-.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 20px}
+.spinner{width:40px;height:40px;border:3px solid var(--slate-200);border-top-color:var(--navy-800);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 20px}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* Respondido counter */
-.counter-bar{position:sticky;top:0;z-index:10;background:rgba(250,250,249,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;justify-content:space-between}
-.counter-bar .label{font-size:12px;color:var(--text3)}
-.counter-bar .value{font-size:13px;font-weight:600;color:var(--accent)}
 </style>
 </head>
 <body>
 
-<!-- Estado: cargando -->
-<div id="state-loading" class="screen">
-  <div class="screen-box">
-    <div class="spinner"></div>
-    <p style="color:var(--text2);font-size:14px">Cargando tu evaluación...</p>
-  </div>
-</div>
+<div id="state-loading" class="screen"><div class="screen-box"><div class="spinner"></div><p style="color:var(--slate-400)">Cargando tu evaluación...</p></div></div>
+<div id="state-error" class="screen" style="display:none"><div class="screen-box"><div class="screen-icon">⚠️</div><div class="screen-title" id="err-title">Link no válido</div><div class="screen-sub" id="err-msg">Este link ha expirado, ya fue utilizado o no es válido.</div></div></div>
+<div id="state-done" class="screen" style="display:none"><div class="screen-box"><div class="screen-icon">✅</div><div class="screen-title">¡Evaluación enviada!</div><div class="screen-sub">Tus respuestas han sido guardadas correctamente. Puedes cerrar esta ventana.</div></div></div>
 
-<!-- Estado: error -->
-<div id="state-error" class="screen" style="display:none">
-  <div class="screen-box">
-    <div class="screen-icon">⚠️</div>
-    <div class="screen-title" id="err-title">Link no válido</div>
-    <div class="screen-sub" id="err-msg">Este link ha expirado, ya fue utilizado, o no es válido.</div>
-  </div>
-</div>
-
-<!-- Estado: completado -->
-<div id="state-done" class="screen" style="display:none">
-  <div class="screen-box">
-    <div class="screen-icon">✅</div>
-    <div class="screen-title">¡Evaluación enviada!</div>
-    <div class="screen-sub">Tus respuestas han sido guardadas correctamente. Puedes cerrar esta ventana.</div>
-  </div>
-</div>
-
-<!-- Estado: cuestionario activo -->
 <div id="state-survey" style="display:none">
   <div class="header">
     <div class="header-inner">
       <div class="header-pre" id="hdr-proceso">Evaluación de desempeño</div>
       <div class="header-title" id="hdr-title">Cargando...</div>
-      <div class="header-sub" id="hdr-sub"></div>
+      <div class="header-meta" id="hdr-meta"></div>
     </div>
   </div>
   <div class="progress-outer"><div class="progress-inner" id="progress" style="width:0%"></div></div>
-
   <div class="counter-bar">
-    <span class="label">Competencias respondidas</span>
-    <span class="value"><span id="cnt-done">0</span> / <span id="cnt-total">0</span></span>
+    <div class="counter-inner">
+      <span class="counter-label">Competencias respondidas</span>
+      <span class="counter-val"><span id="cnt-done">0</span> / <span id="cnt-total">0</span></span>
+    </div>
   </div>
-
   <div class="container">
     <div class="info-card">
-      <div class="info-pill" id="info-tipo-badge">Evaluación</div>
-      <div class="info-evaluado" id="info-evaluado"></div>
-      <div class="info-tipo" id="info-instruccion">Selecciona la opción que mejor describe el desempeño observado en cada competencia.</div>
+      <div class="info-badge" id="info-badge">Evaluación</div>
+      <div class="info-name" id="info-name"></div>
+      <div class="info-inst">Selecciona la frecuencia que mejor describe el comportamiento observado en cada competencia.</div>
     </div>
-
     <div id="comp-container"></div>
-
-    <div class="comment-section">
-      <label>Comentario general (opcional)</label>
-      <p>Puedes agregar observaciones adicionales sobre el desempeño general.</p>
-      <textarea id="comentario" placeholder="Escribe tu comentario aquí..."></textarea>
+    <div class="comment-card">
+      <label>Comentario general <span style="font-weight:400;color:var(--slate-400)">(opcional)</span></label>
+      <p>Puedes agregar observaciones generales sobre el desempeño.</p>
+      <textarea id="comentario" placeholder="Escribe aquí tu comentario..."></textarea>
     </div>
-
-    <div class="submit-area">
-      <button class="btn-submit" id="btn-submit" onclick="enviarRespuestas()">
-        Enviar evaluación
-      </button>
+    <div style="text-align:center">
+      <button class="btn-submit" id="btn-submit" onclick="enviarRespuestas()">Enviar evaluación</button>
     </div>
   </div>
 </div>
@@ -171,108 +129,77 @@ textarea:focus{border-color:var(--accent)}
 <script src="config.js"></script>
 <script>
 let surveyData = null;
-let puntajes   = {};
+let puntajes = {};
 
-// ── Obtener token de la URL ──────────────────────────────────
-function getToken() {
-  return new URLSearchParams(window.location.search).get('t');
-}
+function getToken() { return new URLSearchParams(window.location.search).get('t'); }
 
-// ── Mostrar pantalla ─────────────────────────────────────────
 function showState(s) {
   ['loading','error','done','survey'].forEach(id => {
-    document.getElementById('state-' + id).style.display = id === s ? (s === 'survey' ? 'block' : 'flex') : 'none';
+    const el = document.getElementById('state-'+id);
+    if (el) el.style.display = id === s ? (s==='survey'?'block':'flex') : 'none';
   });
 }
 
-// ── Init ─────────────────────────────────────────────────────
 async function init() {
   const token = getToken();
-  if (!token) {
-    document.getElementById('err-msg').textContent = 'No se encontró un token de evaluación en la URL.';
-    showState('error');
-    return;
-  }
-
+  if (!token) { document.getElementById('err-msg').textContent='No se encontró token en la URL.'; showState('error'); return; }
   try {
-    const data = await api('get_token_info', { token });
+    const data = await api('get_token_info',{token});
     surveyData = data;
     renderSurvey(data);
     showState('survey');
-  } catch(e) {
-    document.getElementById('err-title').textContent = 'Acceso no válido';
-    document.getElementById('err-msg').textContent = e.message;
-    showState('error');
-  }
+  } catch(e) { document.getElementById('err-title').textContent='Acceso no válido'; document.getElementById('err-msg').textContent=e.message; showState('error'); }
 }
 
-// ── Render cuestionario ──────────────────────────────────────
 function renderSurvey(data) {
   const esAuto = data.tipo === 'autoevaluacion';
-  const nombre = data.evaluado_nombre;
+  document.getElementById('hdr-proceso').textContent  = data.proceso_nombre;
+  document.getElementById('hdr-title').textContent    = esAuto ? 'Autoevaluación de desempeño' : 'Evaluación de ' + data.evaluado_nombre;
+  document.getElementById('hdr-meta').textContent     = 'Fecha límite: ' + data.fecha_cierre;
+  document.getElementById('info-badge').textContent   = esAuto ? 'Autoevaluación' : 'Evaluación del líder';
+  document.getElementById('info-name').textContent    = esAuto ? 'Evalúate en cada una de las siguientes competencias' : data.evaluado_nombre;
+  document.getElementById('cnt-total').textContent    = data.competencias.length;
 
-  document.getElementById('hdr-proceso').textContent = data.proceso_nombre;
-  document.getElementById('hdr-title').textContent  = esAuto ? 'Autoevaluación' : 'Evaluación de ' + nombre;
-  document.getElementById('hdr-sub').textContent    = 'Fecha límite: ' + data.fecha_cierre;
-  document.getElementById('info-tipo-badge').textContent = esAuto ? 'Autoevaluación' : 'Evaluación del líder';
-  document.getElementById('info-evaluado').textContent   = esAuto ? 'Evalúate a ti mismo en cada competencia' : nombre;
-  document.getElementById('cnt-total').textContent       = data.competencias.length;
-
-  const container = document.getElementById('comp-container');
-  container.innerHTML = data.competencias.map((comp, i) => `
+  document.getElementById('comp-container').innerHTML = data.competencias.map((comp, i) => `
     <div class="comp-card" id="card-${comp.id}">
-      <div class="comp-number">Competencia ${i + 1} de ${data.competencias.length}</div>
+      <div class="comp-num">COMPETENCIA ${i+1} DE ${data.competencias.length}</div>
       <div class="comp-name">${comp.nombre}</div>
       <div class="likert">
-        ${[1,2,3,4,5].map(v => `
-          <label class="likert-option" title="${LIKERT_LABELS[v]}">
-            <input type="radio" name="${comp.id}" value="${v}" onchange="onPuntaje('${comp.id}', ${v})">
+        ${[1,2,3,4,5].map(v=>`
+          <label class="likert-opt" title="${LIKERT_LABELS[v]}">
+            <input type="radio" name="${comp.id}" value="${v}" onchange="onPuntaje('${comp.id}',${v})">
             <div class="likert-circle">${v}</div>
-            <div class="likert-label">${LIKERT_LABELS[v]}</div>
+            <div class="likert-lbl">${LIKERT_LABELS[v]}</div>
           </label>`).join('')}
       </div>
     </div>`).join('');
 }
 
-// ── Capturar puntaje ─────────────────────────────────────────
 function onPuntaje(compId, val) {
   puntajes[compId] = val;
-  document.getElementById('card-' + compId).classList.add('answered');
-  document.getElementById('card-' + compId).classList.remove('error');
+  document.getElementById('card-'+compId).classList.add('answered');
+  document.getElementById('card-'+compId).classList.remove('error');
   const done = Object.keys(puntajes).length;
   document.getElementById('cnt-done').textContent = done;
-  document.getElementById('progress').style.width = Math.round(done / surveyData.competencias.length * 100) + '%';
+  document.getElementById('progress').style.width = Math.round(done/surveyData.competencias.length*100)+'%';
 }
 
-// ── Enviar ───────────────────────────────────────────────────
 async function enviarRespuestas() {
-  // Validar todas respondidas
-  const pendientes = surveyData.competencias.filter(c => !puntajes[c.id]);
-  if (pendientes.length > 0) {
-    pendientes.forEach(c => {
-      const card = document.getElementById('card-' + c.id);
-      card.classList.add('error');
-      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    });
+  const pendientes = surveyData.competencias.filter(c=>!puntajes[c.id]);
+  if (pendientes.length) {
+    pendientes.forEach(c => { document.getElementById('card-'+c.id).classList.add('error'); });
+    document.getElementById('card-'+pendientes[0].id).scrollIntoView({behavior:'smooth',block:'center'});
     return;
   }
-
   const btn = document.getElementById('btn-submit');
-  btn.disabled = true;
-  btn.textContent = 'Enviando...';
-
+  btn.disabled=true; btn.textContent='Enviando...';
   try {
-    await api('guardar_respuesta', {
-      token: surveyData.token,
-      puntajes,
-      comentario: document.getElementById('comentario').value.trim()
-    });
+    await api('guardar_respuesta',{token:surveyData.token, puntajes, comentario:document.getElementById('comentario').value.trim()});
     showState('done');
   } catch(e) {
-    btn.disabled = false;
-    btn.textContent = 'Enviar evaluación';
-    document.getElementById('err-title').textContent = 'Error al guardar';
-    document.getElementById('err-msg').textContent   = e.message;
+    btn.disabled=false; btn.textContent='Enviar evaluación';
+    document.getElementById('err-title').textContent='Error al guardar';
+    document.getElementById('err-msg').textContent=e.message;
     showState('error');
   }
 }
